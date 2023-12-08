@@ -32,9 +32,12 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/conversations/{threadId}/messages', [MessageController::class, 'sendMessage']);
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::get('/conversations/check', [ConversationController::class, 'checkConversation']);
+
+
 });
 Route::post('/conversations', [ConversationController::class, 'create']);
-Route::get('/users', [UserController::class, 'index']);
 
-Route::get('/conversations', [ConversationController::class, 'index']);
 Route::get('/conversations/{id}', [ConversationController::class, 'getConversation']);

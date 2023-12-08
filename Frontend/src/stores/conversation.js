@@ -24,8 +24,11 @@ export const useConversationStore = defineStore({
         },
         setActiveConversation(conv_id) {
             this.activeConversationId = conv_id;
-            // Optionally, you can fetch additional data for the active conversation
            this.fetchConversationData(conv_id);
+        },
+        setActiveConv(conv_id) {
+            this.activeConversationId = conv_id;
+
         },
         async fetchConversationData(conv_id) {
             try {
@@ -35,7 +38,11 @@ export const useConversationStore = defineStore({
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-                this.activeConversationData = response.data;
+                if (response.data) {
+                    this.activeConversationData = response.data;
+                } else {
+                    this.activeConversationData = null;
+                }
             } catch (error) {
                 console.error('Error fetching conversation data:', error);
             }

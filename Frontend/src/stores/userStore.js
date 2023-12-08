@@ -40,6 +40,7 @@ import axios from 'axios';
 export const useUserStore = defineStore({
     id: 'userStore',
     state: () => ({
+        authUser: null,
         isUserListVisible: false,
         userList: [],
         activeUser: null,
@@ -50,6 +51,9 @@ export const useUserStore = defineStore({
         },
     },
     actions: {
+        setAuthUser(user){
+            this.authUser = user;
+        },
         setActiveUser(user) {
             this.activeUser = user;
         },
@@ -59,7 +63,13 @@ export const useUserStore = defineStore({
         },
         async fetchUsers() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/users');
+                const accessToken = window.localStorage.getItem('api_token')
+                const response = await axios.get('http://127.0.0.1:8000/api/users',{
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    }
+                    );
                 this.userList = response.data;
             } catch (error) {
                 console.error('Error fetching user list:', error);

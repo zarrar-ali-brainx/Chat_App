@@ -1,52 +1,38 @@
 <script setup>
-import { useThreadItemStore} from "@/stores/GlobalStore";
+import { useThreadItemStore } from "@/stores/GlobalStore";
 import {UserIcon} from "@heroicons/vue/24/solid";
+import {useUserStore} from "@/stores/userStore";
+import {useConversationStore} from "@/stores/conversation";
+import {defineProps, onMounted, ref, watch} from "vue";
 
 
+const userStore = useUserStore();
+const threadItemStore = useThreadItemStore();
+const conversationStore = useConversationStore();
+const {activeConversationData} = conversationStore;
 
 const setActiveConversation = (conversation) => {
-  console.log('Clicked Conversation:', conversation);
-
   conversationStore.setActiveConversation(conversation.id);
+  threadItemStore.setActiveConv(conversation.id);
+  threadItemStore.fetchMessages(conversation.id);
 };
-const conversationStore = useConversationStore();
+
 const conversations = ref([]);
 const { user } = defineProps(['user']);
 
 onMounted(() => {
   conversationStore.fetchConversations();
 });
+const scrollToBottom = () => {
+  // Use the ref to access the chat container DOM element
+  const chatContainer = refs.chatContainer;
 
+  // Scroll to the bottom
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+};
 watch(() => conversationStore.conversations, (newConversations) => {
   conversations.value = newConversations;
 });
-import {useUserStore} from "@/stores/userStore";
-import {useConversationStore} from "@/stores/conversation";
-import {defineProps, onMounted, ref, watch} from "vue";
-const userStore = useUserStore();
-const threadItemStore = useThreadItemStore();
-// const setActiveThreadItem = (threadItem) => {
-//   threadItemStore.setActiveThreadItem(threadItem);
-//
-// };
-const setActiveThreadItem = (user) => {
-  // Fetch the conv_id associated with the user
-  const convId = fetchConvId(user);
-  // Set both the user and conv_id
-  threadItemStore.setActiveThreadItem({ user, convId });
-  userStore.toggleUserList();
-};
-
-// Helper function to fetch conv_id associated with the user
-const fetchConvId = async (user) => {
-  try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/users/${user.id}/conversation`);
-    return response.data.id;
-  } catch (error) {
-    console.error('Error fetching conversation ID:', error);
-    return null;
-  }
-};
 
 </script>
 
@@ -57,22 +43,12 @@ const fetchConvId = async (user) => {
     <div  v-for="conversation in conversations" :key="conversation.id"  class="thread-item " @click="setActiveConversation(conversation)">
       <div class="ti-dp"><UserIcon class="user-icon text-white" style="margin-right: 10px;"/></div>
       <div class="ti-info">
-        <span  class="ti-title font-small" >{{ conversation.user_one.name }}</span>
+        <span  class="ti-title font-small" >{{ conversation.user_two.name }}</span>
         <span class="ti-short-msg"></span>
       </div>
     </div>
   </div>
 </template>
-
-
-
-
-
-
-
-
-
-
 
 <style scoped>
 .thread-items{

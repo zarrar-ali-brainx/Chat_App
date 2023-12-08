@@ -6,14 +6,14 @@ import {useThreadItemStore} from "@/stores/GlobalStore";
 import {useConversationStore} from "@/stores/conversation";
 const userStore = useUserStore();
 const threadItemStore = useThreadItemStore();
+const conversationStore = useConversationStore();
 </script>
 
 <template>
   <div class="thread-screen">
-    <div v-if="useConversationStore().activeConversationId">
+    <div v-if="conversationStore.activeConversationData">
         <Messages />
       </div>
-      <div v-else>{{ threadItemStore.conv_id.name}}</div>
     </div>
 
 </template>

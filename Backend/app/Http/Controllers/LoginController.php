@@ -20,11 +20,11 @@ class LoginController extends Controller
                 'status' => true,
                 'message' => 'Success',
                 'access_token' => $token,
+                'user' => $user
             ]);
         }
 
 
         return response()->json(['status' => false]);
     }
-
 }

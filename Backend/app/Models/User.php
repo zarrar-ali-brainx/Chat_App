@@ -42,4 +42,10 @@ class User extends Authenticatable
 //        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function firstConversations(){
+        return $this->hasMany(Conversations::class,'user1_id','id');
+    }
+    public function secondConversations(){
+        return $this->hasMany(Conversations::class,'user2_id','id');
+    }
 }

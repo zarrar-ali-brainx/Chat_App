@@ -23,7 +23,6 @@ class MessageController extends Controller
             'content' => 'required|string',
         ]);
 
-        // Check if a conversation already exists between the logged-in user and the recipient
         $conversation = Conversations::where(function ($query) use ($recipientId) {
             $query->where('user1_id', Auth::id())
                 ->where('user2_id', $recipientId);
@@ -32,7 +31,6 @@ class MessageController extends Controller
                 ->where('user2_id', Auth::id());
         })->first();
 
-        // If the conversation doesn't exist, create a new one
         if (!$conversation) {
             $conversation = Conversations::create([
                 'user1_id' => Auth::id(),
@@ -41,7 +39,6 @@ class MessageController extends Controller
             ]);
         }
         $user = Auth::user();
-        // Now, use the conversation ID to create the message
         $message = new Message([
             'conv_id' => $conversation->id,
             'sender_id' => $user['id'],

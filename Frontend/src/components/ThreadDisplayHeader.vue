@@ -1,52 +1,48 @@
 <script setup>
 
 import {EllipsisVerticalIcon, MagnifyingGlassIcon, UserIcon} from "@heroicons/vue/24/solid";
-import {threadItems} from "@/threadItems";
 import {computed, onMounted, ref, toRefs} from "vue";
 import {useThreadItemStore} from "@/stores/GlobalStore";
 const threadItemStore = useThreadItemStore();
-const {activeThreadItem} = toRefs(threadItemStore);
 import {useConversationStore} from "@/stores/conversation";
+import {storeToRefs} from "pinia";
 const conversationStore = useConversationStore();
 const conversations = ref([]);
 onMounted(() => {
   conversationStore.fetchConversations();
 });
 onMounted(() => {
-  console.log('Active Conversation Data:', activeConversationData);
+  });
+const { activeConversationData } = storeToRefs(conversationStore);
+const { activeThreadItem } = storeToRefs(threadItemStore);
+
+
+const getActiveUserName = computed(() => {
+  if (activeConversationData.value) {
+    const userOne = activeConversationData.value?.user_one;
+    const userTwo = activeConversationData.value?.user_two;
+
+    if (userOne) {
+      return userTwo.name || 'Unknown User';
+    } else if (userTwo) {
+      return userOne.name || 'Unknown User';
+    } else {
+      return 'Unknown User';
+    }
+  }
+  else if(activeThreadItem.value){
+  return activeThreadItem.value.name;
+  }else {
+    return  '';
+  }
+
 });
-const { activeConversationData } = useConversationStore();
-
-console.log('Active Conversation Data:', activeConversationData);
-
-// Function to get the active user's name
-const getActiveUserName = () => {
-  if (!activeConversationData) {
-    console.log('Active Conversation Data is null. Returning Unknown User.');
-    return 'Unknown User';
-  }
-
-  // Check if user_one and user_two are present
-  const userOne = activeConversationData.value.user_one;
-  const userTwo = activeConversationData.value.user_two;
-
-  if (userOne) {
-    console.log('User One Name:', userOne.name);
-    return userOne.name || 'Unknown User';
-  } else if (userTwo) {
-    console.log('User Two Name:', userTwo.name);
-    return userTwo.name || 'Unknown User';
-  } else {
-    console.log('Both user_one and user_two are missing. Returning Unknown User.');
-    return 'Unknown User';
-  }
-};
 </script>
 
 <template>
   <div class="thread-header">
     <UserIcon class="user-icon text-white "/>
-    <div   class="thread-title">{{  getActiveUserName(activeConversationData) }}</div>
+    <div   class="thread-title">{{  getActiveUserName }}</div>
     <MagnifyingGlassIcon class="magnifying-glass"/>
     <EllipsisVerticalIcon class="Ellipses-vertical" />
   </div>

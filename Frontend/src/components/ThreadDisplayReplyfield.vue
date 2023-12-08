@@ -11,10 +11,10 @@ const recipientId = ref('');
 const threadItemStore = useThreadItemStore();
 const {activeThreadItem} = toRefs(threadItemStore);
 const {activeConversationData} = toRefs(conversationStore);
-
+import {useUserStore} from "@/stores/userStore";
+const userStore = useUserStore();
 const newMessage = ref('');
 const isTyping = ref(false);
-console.log(activeThreadItem)
 const setConvId = (ConvId) => {
   threadItemStore.setConvId(ConvId);
 
@@ -30,25 +30,32 @@ const item =ref({
 const sendMessage = async () => {
   if (item.value.content.trim() !== '') {
     try {
-      console.log(activeConversationData.value.id)
+      let id = null;
+      if(activeConversationData.value?.user2_id != userStore.authUser.id){
+          id = activeConversationData.value?.user2_id;
+      }else if(activeConversationData.value?.user1_id != userStore.authUser.id){
+        id = activeConversationData.value?.user1_id;
+      }
+      const previousConversationId = activeConversationData.value?.id;
 
-      item.value.recipientId = activeConversationData.value.id;
-
-      await axios.post(`http://127.0.0.1:8000/api/conversations/${conversationStore.activeConversationData.id}/messages`, item.value,{
+      item.value.recipientId = id || activeThreadItem.value?.id;
+      await axios.post(`http://127.0.0.1:8000/api/conversations/${item.value.recipientId}/messages`, item.value,{
         headers: {
           Authorization: `Bearer ${accessToken}`,
         }}
       ).then(response =>{
-        console.log(response.data.id);
 
         fetchMessages(response.data.id);
+        if (!previousConversationId){
+          conversationStore.fetchConversations();
+          conversationStore.fetchConversationData(response.data.id)
+        }
 
       }).catch(error =>{
         console.log(error)
       })
 
-      // Fetch messages again after sending a new message
-      // await fetchMessages(response.data.id);
+
       item.value.content = '';
     } catch (error) {
       console.error('Error sending message:', error);
@@ -64,21 +71,25 @@ const sendMessage = async () => {
         },
 
       }).then(response =>{
-        console.log(response.data)
+        threadItemStore.activeConv = response.data;
+
       });
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
   };
+const scrollChatToBottom = () => {
+  const chatContainer = document.getElementById('messages');
+  if (chatContainer) {
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+};
     const message = {
       text: item.value.content,
+
     };
 
-  // addMessageToThread(activeThreadItem.value.id, message);
-  // console.log(activeThreadItem.value.id);
-  // console.log(message);
-  // newMessage.value = '';
-  // isTyping.value = false;
+
 
 
 

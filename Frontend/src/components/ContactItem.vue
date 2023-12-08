@@ -2,20 +2,93 @@
 import {UserIcon} from "@heroicons/vue/24/solid";
 import {  defineEmits } from 'vue';
 import { defineProps } from 'vue';
-
-const emit = defineEmits(['click', 'startConversation','setActiveThreadItem']);
 import {useUserStore} from "@/stores/userStore";
 const userStore = useUserStore();
 import {useThreadItemStore} from "@/stores/GlobalStore";
-import threadItem from "@/components/ThreadItem.vue";
 const threadItemStore = useThreadItemStore();
 const { user } = defineProps(['user']);
+import {useConversationStore} from "@/stores/conversation";
+import {storeToRefs} from "pinia";
+const conversationStore = useConversationStore();
+const {activeThreadItem} = storeToRefs(conversationStore);
 
-const setActiveThreadItem = (threadItem) => {
-  threadItemStore.setActiveThreadItem(threadItem);
+const setActiveThreadItem = (user) => {
+
+  threadItemStore.setActiveThreadItem(user);
+
   userStore.toggleUserList();
-};
+  let userFind = userStore.userList.find(el=>el.id == user.id);
+  if (userFind?.conversation) {
+    const conv_id = userFind.conversation.id
+    console.log(conv_id)
+    conversationStore.setActiveConv(conv_id);
+    conversationStore.setActiveConversation(conv_id);
+    threadItemStore.fetchMessages(conv_id);
 
+
+  }
+  else {
+    conversationStore.activeConversationData =null;
+  }
+
+};
+// const token = localStorage.getItem('api_token');
+// const decodedToken = jwt_decode(token);
+//
+// const loggedInUserId = decodedToken.sub;
+// const setActiveThreadItem = async (selectedUser, loggedInUser) => {
+//   const existingConversation = await checkConversation(loggedInUser.id, selectedUser.id);
+//
+//   if (existingConversation) {
+//     conversationStore.setActiveConversation(existingConversation.id);
+//     threadItemStore.setActiveConv(existingConversation.id);
+//    await threadItemStore.fetchMessages(existingConversation.id);
+//   } else {
+//     const newConversation = await createConversation(loggedInUser.id, selectedUser.id);
+//
+//     conversationStore.setActiveConversation(newConversation.id);
+//     threadItemStore.setActiveConv(newConversation.id);
+//     await threadItemStore.fetchMessages(newConversation.id);
+//   }
+//
+//   await userStore.toggleUserList();
+// };
+//
+// const checkConversation = async (user1Id, user2Id) => {
+//   try {
+//     const response = await axios.get('http://127.0.0.1:8000/api/conversations/check', {
+//       params: {
+//         user1_id: user1Id,
+//         user2_id: user2Id,
+//       },
+//     });
+//
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error checking conversation:', error);
+//     return null;
+//   }
+// };
+//
+// const createConversation = async (user1Id, user2Id) => {
+//   try {
+//     const accessToken = localStorage.getItem('api_token');
+//
+//     const response = await axios.post('http://127.0.0.1:8000/api/conversations', {
+//       user1_id: user1Id,
+//       user2_id: user2Id,
+//     },{
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     });
+//
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error creating conversation:', error);
+//     return null;
+//   }
+// };
 </script>
 
 <template>
@@ -24,7 +97,7 @@ const setActiveThreadItem = (threadItem) => {
       <!--        @click="(toggleActive )" class="thread-item ">-->
   <div  v-for="user in userStore.userList"
         :key="user.id"
-        @click="setActiveThreadItem(user)"
+          @click="setActiveThreadItem(user)"
         >
       <div class="thread-item ">
         <div class="ti-dp"><UserIcon class="user-icon text-white" style="margin-right: 10px;"/></div>

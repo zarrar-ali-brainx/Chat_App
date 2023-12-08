@@ -1,3 +1,34 @@
+<script setup>
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+// import Home from "@/components/Home.vue";
+import Register from "@/components/Register.vue";
+import {useUserStore} from "@/stores/userStore";
+const userStore = useUserStore();
+const user = ref({
+  phone_no: '',
+  password: ''
+});
+const router = useRouter();
+const loginData = () => {
+  axios.post('http://127.0.0.1:8000/api/login', user.value)
+      .then(({ data }) => {
+        console.log(data);
+        userStore.setAuthUser(data.user);
+
+        window.localStorage.setItem("api_token", data.access_token);
+        router.push({name: 'home'})
+      }).catch((err)=> {
+    console.log(err);
+  });
+};
+
+</script>
+
+
+
+
 <template>
 
   <div class="container">
@@ -29,30 +60,7 @@
 </template>
 
 
-<script setup>
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-// import Home from "@/components/Home.vue";
-import Register from "@/components/Register.vue";
-const user = ref({
-  phone_no: '',
-  password: ''
-});
-const router = useRouter();
-const loginData = () => {
-  axios.post('http://127.0.0.1:8000/api/login', user.value)
-      .then(({ data }) => {
-        console.log(data);
 
-            window.localStorage.setItem("api_token", data.access_token);
-            // router.push({name: '/'})
-        }).catch((err)=> {
-          console.log('error');
-      });
-};
-
-</script>
 <style scoped>
 
 
