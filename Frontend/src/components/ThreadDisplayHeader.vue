@@ -6,6 +6,8 @@ import {useThreadItemStore} from "@/stores/GlobalStore";
 const threadItemStore = useThreadItemStore();
 import {useConversationStore} from "@/stores/conversation";
 import {storeToRefs} from "pinia";
+import {useUserStore} from "@/stores/userStore";
+const userStore = useUserStore();
 const conversationStore = useConversationStore();
 const conversations = ref([]);
 onMounted(() => {
@@ -19,23 +21,25 @@ const { activeThreadItem } = storeToRefs(threadItemStore);
 
 const getActiveUserName = computed(() => {
   if (activeConversationData.value) {
-    const userOne = activeConversationData.value?.user_one;
-    const userTwo = activeConversationData.value?.user_two;
+    const userOne = activeConversationData.value.user_one;
+    const userTwo = activeConversationData.value.user_two;
+    const currentUserId = userStore.authUser.id;
 
-    if (userOne) {
-      return userTwo.name || 'Unknown User';
-    } else if (userTwo) {
+    if (userOne && userOne.id !== currentUserId) {
       return userOne.name || 'Unknown User';
+    } else if (userTwo && userTwo.id !== currentUserId) {
+      return userTwo.name || 'Unknown User';
     } else {
       return 'Unknown User';
     }
+  } else if (activeThreadItem.value) {
+    const currentUserId = userStore.authUser.id;
+    return activeThreadItem.value.user_id === currentUserId
+        ? activeThreadItem.value.name
+        : 'Unknown User';
+  } else {
+    return '';
   }
-  else if(activeThreadItem.value){
-  return activeThreadItem.value.name;
-  }else {
-    return  '';
-  }
-
 });
 </script>
 
@@ -44,6 +48,7 @@ const getActiveUserName = computed(() => {
     <UserIcon class="user-icon text-white "/>
     <div   class="thread-title">{{  getActiveUserName }}</div>
     <MagnifyingGlassIcon class="magnifying-glass"/>
+
     <EllipsisVerticalIcon class="Ellipses-vertical" />
   </div>
 </template>
@@ -58,7 +63,10 @@ const getActiveUserName = computed(() => {
   max-width: 100%;
   box-sizing: border-box;
 }
-
+.dropdown{
+  display: inline-block;
+  position: relative;
+}
 .magnifying-glass{
   height: 29px;
   width: 25px;

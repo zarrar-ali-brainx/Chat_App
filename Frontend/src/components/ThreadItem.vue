@@ -33,7 +33,17 @@ const scrollToBottom = () => {
 watch(() => conversationStore.conversations, (newConversations) => {
   conversations.value = newConversations;
 });
+const getOtherUserName = (conversation) => {
+  const currentUserId = userStore.authUser.id;
 
+  if (currentUserId === conversation.user_one.id) {
+    return conversation.user_two.name;
+  } else if (currentUserId === conversation.user_two.id) {
+    return conversation.user_one.name;
+  } else {
+    return "Unknown User";
+  }
+};
 </script>
 
 <template>
@@ -43,7 +53,7 @@ watch(() => conversationStore.conversations, (newConversations) => {
     <div  v-for="conversation in conversations" :key="conversation.id"  class="thread-item " @click="setActiveConversation(conversation)">
       <div class="ti-dp"><UserIcon class="user-icon text-white" style="margin-right: 10px;"/></div>
       <div class="ti-info">
-        <span  class="ti-title font-small" >{{ conversation.user_two.name }}</span>
+        <span  class="ti-title font-small" >{{ getOtherUserName(conversation) }}</span>
         <span class="ti-short-msg"></span>
       </div>
     </div>

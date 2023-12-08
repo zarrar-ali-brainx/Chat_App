@@ -40,7 +40,7 @@ import axios from 'axios';
 export const useUserStore = defineStore({
     id: 'userStore',
     state: () => ({
-        authUser: null,
+        authUser: {},
         isUserListVisible: false,
         userList: [],
         activeUser: null,
