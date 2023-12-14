@@ -15,4 +15,14 @@ class Message extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function conversation()
+    {
+        return $this->belongsTo(Conversations::class, 'conv_id', 'id');
+    }
+
+    public function sender()
+    {
+        return $this->belongsTo(User::class, 'sender_id');
+    }
+
 }

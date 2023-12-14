@@ -1,6 +1,6 @@
 <script setup>
 import {UserIcon} from "@heroicons/vue/24/solid";
-import {  defineEmits } from 'vue';
+import {defineEmits, ref,inject} from 'vue';
 import { defineProps } from 'vue';
 import {useUserStore} from "@/stores/userStore";
 const userStore = useUserStore();
@@ -12,45 +12,41 @@ import {storeToRefs} from "pinia";
 import UserSearch from "@/components/Group.vue";
 const conversationStore = useConversationStore();
 const {activeThreadItem} = storeToRefs(conversationStore);
+import {useSharedState} from "@/sharedState";
+const selectedUsers = inject('groupMembers');
+const groupMembers = ref([]);
+const handleCheckboxChange = (userId) => {
+  const index = selectedUsers.value.indexOf(userId);
 
-const setActiveThreadItem = (user) => {
-
-  threadItemStore.setActiveThreadItem(user);
-
-  userStore.toggleUserList();
-  let userFind = userStore.userList.find(el=>el.id == user.id);
-  if (userFind?.conversation) {
-    const conv_id = userFind.conversation.id
-    console.log(conv_id)
-    conversationStore.setActiveConv(conv_id);
-    conversationStore.setActiveConversation(conv_id);
-    threadItemStore.fetchMessages(conv_id);
-
-
-  }
-  else {
-    conversationStore.activeConversationData =null;
+  if (index !== -1) {
+    selectedUsers.value.splice(index, 1);
+  } else {
+    selectedUsers.value.push(userId);
   }
 
+  console.log(selectedUsers.value);
 };
-
 </script>
-   
+
 <template>
 
-      <!--  <div  v-for="threadItem in threadItems"-->
-      <!--        @click="(toggleActive )" class="thread-item ">-->
+
   <div  v-for="user in userStore.getUserList"
         :key="user.id"
-          @click="setActiveThreadItem(user)"
-        >
-      <div class="thread-item ">
-        <div class="ti-dp"><UserIcon class="user-icon text-white" style="margin-right: 10px;"/></div>
-        <div class="ti-info">
-          <span  class="ti-title font-small">    {{ user.name }} </span>
-          <span class="ti-short-msg"></span>
-        </div>
+  >
+    <div class="thread-item ">
+      <input
+          type="checkbox"
+          :value="user.id"
+          class="checkBox"
+          @change="() => handleCheckboxChange(user.id)"
+      />
+
+      <div class="ti-dp"><UserIcon class="user-icon text-white" style="margin-right: 10px;"/></div>
+      <div class="ti-info">
+        <span  class="ti-title font-small">    {{ user.name }} </span>
       </div>
+    </div>
   </div>
 
 </template>
@@ -65,7 +61,9 @@ const setActiveThreadItem = (user) => {
   box-sizing: border-box;
   width: 100%;
 }
-
+.checkBox{
+  margin-left: 15px;
+}
 .thread-item{
   display: flex;
   flex-direction: row;

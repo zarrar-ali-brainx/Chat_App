@@ -21,17 +21,21 @@ const checkAccessToken = () => {
 };
 const  check = async() => {
   const accessToken = localStorage.getItem('api_token');
-
-  await axios.get(`http://127.0.0.1:8000/api/user`,{
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    }}
-  ).then(response =>{
+if(accessToken) {
+  await axios.get(`http://127.0.0.1:8000/api/user`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }
+      }
+  ).then(response => {
     userStore.setAuthUser(response.data);
 
-  }).catch(error =>{
+  }).catch(error => {
     console.log(error)
   })
+}else {
+
+}
 };
 
 </script>

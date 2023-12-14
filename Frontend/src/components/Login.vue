@@ -31,7 +31,7 @@ const loginData = () => {
 
 <template>
 
-  <div class="container">
+  <div class="custom-container">
     <div class="row custom-row1 ">
       <div class="app-view-container">
         <div class="login-view">
@@ -64,7 +64,7 @@ const loginData = () => {
 <style scoped>
 
 
-.container{
+.custom-container{
   width: 100%;
   height: 100%;
   overflow: hidden;

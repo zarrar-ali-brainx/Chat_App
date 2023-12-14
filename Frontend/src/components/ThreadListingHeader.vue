@@ -13,7 +13,12 @@ import {ref} from "vue";
 import ContactItem from "@/components/ContactItem.vue";
 import router from "@/router";
 import {useRouter} from "vue-router";
+const { create } = defineProps(['create']);
+const emit = defineEmits(['create']);
 
+const createGroup = () => {
+  emit('create');
+};
 const isUserListVisible = ref(false);
 const userStore = useUserStore();
 const router1 = useRouter();
@@ -31,16 +36,14 @@ window.location.href = '/login';
 <template>
   <div class="tl-header">
     <div class="user-info">
-      <UserIcon class="user-icon text-white"/>
-      <p class="user-name">{{ userStore.authUser.name }}</p>
+      <UserIcon class="user-icon text-white" style="margin-right: 8px; height: 40px; width: 40px;  background-color: lightslategray"  />
+      <p class="user-name" style="width: 15%; margin-top: 20px">{{ userStore.authUser.name }}</p>
     </div>
     <div class="icons-container">
-
-    <UsersIcon style="width: 23px;height: 23px; margin-top: 18px; margin-left: 70px; cursor: pointer; "/>
+    <UsersIcon class="users-icon" @click="createGroup()" style="width: 23px;height: 23px; margin-top: 18px; margin-left: 105px; cursor: pointer;" />
     <ChatBubbleOvalLeftEllipsisIcon style="width: 23px;height: 23px; margin-top: 17px; margin-left: 30px; cursor: pointer;"/>
     <PlusIcon @click="toggleUserList()" style="width: 23px;height: 23px; margin-top: 17px; margin-left: 30px; cursor: pointer;"/>
-    <EllipsisVerticalIcon style="width: 23px;height: 23px; margin-top: 17px; margin-left: 20px; cursor: pointer;"/>
-      <PowerIcon @click="Logout()" style="width: 21px;height: 21px; margin-top: 18px; margin-left: 20px; cursor: pointer;"/>
+      <PowerIcon @click="Logout()" style="width: 21px;height: 21px; margin-top: 18px; margin-left: 20px; margin-right: 5px; cursor: pointer;"/>
 <!--    <transition name="fade">-->
 <!--      <div v-if="isUserListVisible">-->
 <!--        &lt;!&ndash; Fetch and display user list using ContactItem component &ndash;&gt;-->
@@ -49,33 +52,39 @@ window.location.href = '/login';
 <!--    </transition>-->
     </div>
   </div>
+
 </template>
 
 <style scoped>
 
 
 
-.users-icon{
-  height: 40px;
-  width: 40px;
-  margin-top: 10px;
+.group-icon {
+  display: none;
+}
 
+.users-icon:hover + .group-icon {
+  display: block;
+  color: red;
 }
 .tl-header {
   display: flex;
+  flex: 0 0 auto; /* flex-grow: 0, flex-shrink: 0, flex-basis: auto */
+  overflow: hidden; /* Hide content that overflows */
+  white-space: nowrap;
   flex-direction: row;
   flex-wrap: nowrap;
   height: 59px;
   width: 485px;
   background-color: #f0f2f5;
   position: relative;
-  overflow: auto;
   box-sizing: border-box;
 }
 
 .user-info {
   display: flex;
   align-items: center;
+  width: 40%;
 }
 
 .user-icon {

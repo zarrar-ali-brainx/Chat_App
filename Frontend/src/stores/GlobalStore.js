@@ -6,7 +6,8 @@ export const useThreadItemStore = defineStore({
     id: 'threadItemStore',
     state: () => ({
         activeThreadItem: null,
-        activeConv: null
+        activeConv: null,
+
     }),
     getters: {
         getActiveThreadItem() {

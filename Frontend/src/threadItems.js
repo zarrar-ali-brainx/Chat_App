@@ -1,9 +1,6 @@
 import {ref} from "vue";
 
 export const threadItems = ref([
-    { id: 1, name: 'John Doe', msgReceived: [{ id: 1, text: 'Hello' },{ id: 2, text: 'Yes' }], msgSend: [{ id: 2, text: 'Hi' }] },
-    { id: 2, name: 'McGregor', msgReceived: [{ id: 1, text: 'Hello' },{ id: 2, text: 'Yes' }], msgSend: [{ id: 1, text: 'Hi' }] },
-    { id: 3, name: 'Khabeeb', msgReceived: [{ id: 1, text: 'Salam' }], msgSend: [{ id: 2, text: 'W.salam' }] },
 
 ]);
 

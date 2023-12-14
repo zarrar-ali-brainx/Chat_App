@@ -25,6 +25,7 @@ import ThreadDisplayContainer from "@/components/ThreadDisplayContainer.vue";
 .custom-container{
   width: 100%;
   overflow: hidden;
+  margin: 0 auto;
 
 }
 .custom-row1{
@@ -34,7 +35,7 @@ import ThreadDisplayContainer from "@/components/ThreadDisplayContainer.vue";
 }
 .custom-row2{
   background-color: #dadada;
-  height: 830px;
+  height: 845px;
   overflow: hidden;
 }
 .app-view-container{
@@ -43,6 +44,9 @@ import ThreadDisplayContainer from "@/components/ThreadDisplayContainer.vue";
   //margin-top: 1.5%;
   margin-left: 5%;
   margin-right: 5%;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
 
 }
 @media screen and (max-width: 1669px) {

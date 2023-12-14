@@ -44,22 +44,35 @@ export const useUserStore = defineStore({
         isUserListVisible: false,
         userList: [],
         activeUser: null,
+        searchUser: '',
+        searchResult: []
+
     }),
     getters: {
         getActiveUser() {
             return this.activeUser;
         },
+
+        getUserList(){
+            let vm = this;
+            return this.userList.filter((user) => user.name.toLowerCase().includes(vm.searchUser.toLowerCase()));
+
+        }
     },
     actions: {
+        setDisplayedUsers(users) {
+            this.displayedUsers = users;
+        },
         setAuthUser(user){
             this.authUser = user;
         },
         setActiveUser(user) {
             this.activeUser = user;
         },
+
         async toggleUserList() {
             this.isUserListVisible = !this.isUserListVisible;
-            await this.fetchUsers();
+            if(this.userList.length <= 0) await  this.fetchUsers()
         },
         async fetchUsers() {
             try {

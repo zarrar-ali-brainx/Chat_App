@@ -11,7 +11,7 @@ class MessageController extends Controller
 {
     public function fetchMessages($conversationId)
     {
-        $messages = Message::where('conv_id', $conversationId)->get();
+        $messages = Message::where('conv_id', $conversationId)->with('sender')->get();
 
         return response()->json($messages);
     }
@@ -50,6 +50,36 @@ class MessageController extends Controller
     return response()->json($conversation);
 //        return response()->json(['message' => 'Message sent successfully']);
     }
+    public function sendGroupMessage(Request $request, $conversationId)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+
+        $message = new Message([
+            'conv_id' => $conversationId,
+            'sender_id' => $user['id'],
+            'content' => $request->input('content'),
+            'time' => now(),
+        ]);
+
+        $message->save();
+        $conversation = Conversations::with('messages')->where('conv_id',$conversationId);
 
 
+        return response()->json($conversation);
+    }
+    public function destroy($id)
+    {
+        try {
+            $message = Message::findOrFail($id);
+            $message->delete();
+
+            return response()->json(['message' => 'Message deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting message'], 500);
+        }
+    }
 }

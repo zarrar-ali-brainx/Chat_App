@@ -1,6 +1,6 @@
 <script setup>
 import { useThreadItemStore } from "@/stores/GlobalStore";
-import {UserIcon} from "@heroicons/vue/24/solid";
+import {UserIcon, UsersIcon} from "@heroicons/vue/24/solid";
 import {useUserStore} from "@/stores/userStore";
 import {useConversationStore} from "@/stores/conversation";
 import {defineProps, onMounted, ref, watch} from "vue";
@@ -13,7 +13,7 @@ const {activeConversationData} = conversationStore;
 
 const setActiveConversation = (conversation) => {
   conversationStore.setActiveConversation(conversation.id);
-  threadItemStore.setActiveConv(conversation.id);
+  // threadItemStore.setActiveConv(conversation.id);
   threadItemStore.fetchMessages(conversation.id);
 };
 
@@ -23,20 +23,17 @@ const { user } = defineProps(['user']);
 onMounted(() => {
   conversationStore.fetchConversations();
 });
-const scrollToBottom = () => {
-  // Use the ref to access the chat container DOM element
-  const chatContainer = refs.chatContainer;
 
-  // Scroll to the bottom
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-};
 watch(() => conversationStore.conversations, (newConversations) => {
   conversations.value = newConversations;
 });
 const getOtherUserName = (conversation) => {
   const currentUserId = userStore.authUser.id;
-
-  if (currentUserId === conversation.user_one.id) {
+  if (conversation.type === 0) {
+    // Group conversation
+    return conversation.group_name;
+  }
+  else if (currentUserId === conversation.user_one.id) {
     return conversation.user_two.name;
   } else if (currentUserId === conversation.user_two.id) {
     return conversation.user_one.name;
@@ -44,6 +41,9 @@ const getOtherUserName = (conversation) => {
     return "Unknown User";
   }
 };
+
+
+
 </script>
 
 <template>
@@ -51,7 +51,8 @@ const getOtherUserName = (conversation) => {
     <!--  <div  v-for="threadItem in threadItems"-->
     <!--        @click="(toggleActive )" class="thread-item ">-->
     <div  v-for="conversation in conversations" :key="conversation.id"  class="thread-item " @click="setActiveConversation(conversation)">
-      <div class="ti-dp"><UserIcon class="user-icon text-white" style="margin-right: 10px;"/></div>
+      <div v-if="!conversation.group_name" class="ti-dp"><UserIcon class="user-icon text-white" style="margin-right: 10px; background-color: deepskyblue"/></div>
+      <div v-else class="ti-dp"><UsersIcon class="user-icon text-white" style="margin-right: 10px; background-color: lightslategray"/></div>
       <div class="ti-info">
         <span  class="ti-title font-small" >{{ getOtherUserName(conversation) }}</span>
         <span class="ti-short-msg"></span>
@@ -67,7 +68,7 @@ const getOtherUserName = (conversation) => {
   position: relative;
   overflow: auto;
   box-sizing: border-box;
-  width: 100%;
+  width: 485px;
 }
 
 .thread-item{
@@ -94,7 +95,7 @@ const getOtherUserName = (conversation) => {
 .ti-info{
   position: relative;
 
-  width: 85%;
+  width: 75%;
   height: 60px;
   border-bottom: 3px solid #e9edef ;
   box-sizing: border-box;

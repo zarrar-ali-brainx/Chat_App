@@ -9,44 +9,75 @@ import {storeToRefs} from "pinia";
 import {useUserStore} from "@/stores/userStore";
 const userStore = useUserStore();
 const conversationStore = useConversationStore();
-const conversations = ref([]);
 onMounted(() => {
   conversationStore.fetchConversations();
 });
 onMounted(() => {
   });
-const { activeConversationData } = storeToRefs(conversationStore);
+const { conversations, activeConversationData } = storeToRefs(conversationStore);
 const { activeThreadItem } = storeToRefs(threadItemStore);
 
+const getGroupMembersNames = computed(() => {
+  const currentUserId = userStore.authUser.id;
+
+  if (activeConversationData.value?.type === 0) {
+    const activeConversation = conversations.value.find(
+        (conv) => conv.id === activeConversationData.value.id
+    );
+
+    if (activeConversation && activeConversation.users) {
+      const groupMembers = activeConversation.users.filter(
+          (user) => user.id !== currentUserId
+      );
+
+      return groupMembers;
+    }
+  }
+
+  return [];
+});
 
 const getActiveUserName = computed(() => {
   if (activeConversationData.value) {
-    const userOne = activeConversationData.value.user_one;
-    const userTwo = activeConversationData.value.user_two;
+    const conversation = activeConversationData.value;
     const currentUserId = userStore.authUser.id;
 
-    if (userOne && userOne.id !== currentUserId) {
-      return userOne.name || 'Unknown User';
-    } else if (userTwo && userTwo.id !== currentUserId) {
-      return userTwo.name || 'Unknown User';
+    if (conversation.type === 0) {
+      return conversation.group_name || 'Unknown Group';
     } else {
-      return 'Unknown User';
+      const userOne = conversation.user_one;
+      const userTwo = conversation.user_two;
+
+      if (userOne && userOne.id !== currentUserId) {
+        return userOne.name || 'Unknown User';
+      } else if (userTwo && userTwo.id !== currentUserId) {
+        return userTwo.name || 'Unknown User';
+      } else {
+        return 'Unknown User';
+      }
     }
-  } else if (activeThreadItem.value) {
-    const currentUserId = userStore.authUser.id;
-    return activeThreadItem.value.user_id === currentUserId
-        ? activeThreadItem.value.name
-        : 'Unknown User';
+  }
+    else if (activeThreadItem.value) {
+    return activeThreadItem.value.name
   } else {
     return '';
   }
-});
+}
+  );
 </script>
 
 <template>
   <div class="thread-header">
     <UserIcon class="user-icon text-white "/>
-    <div   class="thread-title">{{  getActiveUserName }}</div>
+    <span   class="thread-title">{{  getActiveUserName }}<br>
+      <span v-for="(member,index) in getGroupMembersNames" :key="member.id" class="thread-participants">
+        {{member.name }}
+          <span v-if="index < getGroupMembersNames.length - 1">, </span>
+
+    </span>
+
+    </span>
+
     <MagnifyingGlassIcon class="magnifying-glass"/>
 
     <EllipsisVerticalIcon class="Ellipses-vertical" />
@@ -76,7 +107,11 @@ const getActiveUserName = computed(() => {
   margin-left: 10px;
   cursor: pointer;
 }
+.thread-participants{
+  font-weight: lighter;
+  font-size: small;
 
+}
 .Ellipses-vertical{
   height: 28px;
   width: 30px;
@@ -90,7 +125,7 @@ const getActiveUserName = computed(() => {
   width: 85%;
   font-size: large;
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 5px;
   box-sizing: border-box;
 }
 

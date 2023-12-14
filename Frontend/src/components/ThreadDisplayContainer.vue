@@ -20,20 +20,24 @@ const userStore = useUserStore()
 const {activeUser} = toRefs(userStore);
 const {activeThreadItem} = toRefs(threadItemStore);
 const {activeConversationId} = toRefs(conversationStore);
-
+const {fetchMsg} = defineProps(['fetchMsg']);
+const isDelete = ref(false)
+const fetching = () =>{
+  this.isDelete= true;
+}
 </script>
 
 <template>
 
   <div v-if="activeConversationId" class="thread-display-container" >
     <ThreadDisplayHeader />
-    <ThreadDisplayScreen />
-    <ThreadDisplayReplyfield />
+    <ThreadDisplayScreen @fetchMsg="fetching"/>
+    <ThreadDisplayReplyfield :fetchMsg="isDelete"/>
   </div>
   <div v-else-if="activeThreadItem" class="thread-display-container" >
     <ThreadDisplayHeader />
-    <ThreadDisplayScreen />
-    <ThreadDisplayReplyfield />
+    <ThreadDisplayScreen @fetchMsg="fetching"/>
+    <ThreadDisplayReplyfield :fetch="isDelete"/>
   </div>
 
   <div v-else class="initial-display">
@@ -49,7 +53,7 @@ const {activeConversationId} = toRefs(conversationStore);
   display: flex;
   position: relative;
   height: 920px;
-  width: 70%;
+  width: 63.4%;
   background-color: #ececec;
   align-content: center;
   justify-content: center;
@@ -65,7 +69,7 @@ const {activeConversationId} = toRefs(conversationStore);
   position: relative;
   flex-direction: column;
   height: 920px;
-  width: 70%;
+  width: 63.48%;
   max-height: 100%;
 }
 </style>

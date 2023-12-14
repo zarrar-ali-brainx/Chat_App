@@ -22,4 +22,8 @@ class Conversations extends Model
     {
         return $this->belongsTo(User::class,'user2_id','id');
     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'group_members', 'group_id', 'user_id');
+    }
 }
