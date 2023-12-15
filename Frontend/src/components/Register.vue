@@ -12,7 +12,6 @@ const router1 = useRouter();
 const saveData = () => {
   axios.post('http://127.0.0.1:8000/api/register', user.value)
       .then(({ data }) => {
-        console.log(data);
         try {
           router1.push({name: 'Login'});
         } catch (err) {

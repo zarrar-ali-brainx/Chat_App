@@ -1,7 +1,6 @@
 
 <script setup>
 import {TrashIcon} from "@heroicons/vue/24/solid";
-import {ref, onMounted, toRefs, watchEffect, computed} from 'vue';
 import { useThreadItemStore } from '@/stores/GlobalStore';
 import {useConversationStore} from "@/stores/conversation";
 import {useUserStore} from "@/stores/userStore";
@@ -12,9 +11,6 @@ const threadItemStore = useThreadItemStore();
 const userStore = useUserStore();
 const {activeConversationData} = storeToRefs(conversationStore);
 const {  activeConv } = storeToRefs(threadItemStore);
-const emit = defineEmits(['fetch'])
-const messageInput = ref('');
-const {fetchMessages} = storeToRefs(threadItemStore)
 const formatTimestamp = (timestamp) => {
   const date = new Date(timestamp);
   const hours = date.getHours() % 12 || 12; // Convert 24-hour to 12-hour format
@@ -33,7 +29,6 @@ const deleteMessage = async (messageId) => {
       },
     }).then(response =>{
       threadItemStore.fetchMessages(activeConversationData.value.id)
-      console.log(response.data)
     }).catch(error =>{
       console.log(error);
     });

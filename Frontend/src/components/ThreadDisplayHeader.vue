@@ -3,6 +3,7 @@
 import {EllipsisVerticalIcon, MagnifyingGlassIcon, UserIcon} from "@heroicons/vue/24/solid";
 import {computed, onMounted, ref, toRefs} from "vue";
 import {useThreadItemStore} from "@/stores/GlobalStore";
+import axios from "axios";
 const threadItemStore = useThreadItemStore();
 import {useConversationStore} from "@/stores/conversation";
 import {storeToRefs} from "pinia";
@@ -64,6 +65,33 @@ const getActiveUserName = computed(() => {
   }
 }
   );
+
+const showDropdown = ref(false);
+
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+const deleteChat = () => {
+  console.log('Deleting chat...');
+  const chat = conversationStore.activeConversationData.id;
+  const accessToken = localStorage.getItem('api_token');
+  axios.delete(`http://127.0.0.1:8000/api/conversations/${chat}`,{
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+      .then(response =>{
+        conversationStore.fetchConversations();
+        conversationStore.activeConversationId =null;
+      })
+      .catch(error =>{
+        console.log(error);
+      });
+  showDropdown.value = false;
+};
+
+
 </script>
 
 <template>
@@ -80,8 +108,12 @@ const getActiveUserName = computed(() => {
 
     <MagnifyingGlassIcon class="magnifying-glass"/>
 
-    <EllipsisVerticalIcon class="Ellipses-vertical" />
-  </div>
+    <div class="dropdown">
+      <EllipsisVerticalIcon class="Ellipses-vertical" @click="toggleDropdown" />
+      <div v-if="showDropdown" class="dropdown-content">
+        <span @click="deleteChat">Delete Chat</span>
+      </div>
+    </div>  </div>
 </template>
 
 <style scoped>
@@ -145,5 +177,30 @@ const getActiveUserName = computed(() => {
   box-sizing: border-box;
 
 }
+.dropdown {
+  position: relative;
+}
 
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #f9f9f9;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: small;
+  width: 95px;
+}
+
+.dropdown-content span {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-content span:hover {
+  background-color: #ddd;
+}
 </style>

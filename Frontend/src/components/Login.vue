@@ -14,7 +14,6 @@ const router = useRouter();
 const loginData = () => {
   axios.post('http://127.0.0.1:8000/api/login', user.value)
       .then(({ data }) => {
-        console.log(data);
         userStore.setAuthUser(data.user);
 
         window.localStorage.setItem("api_token", data.access_token);

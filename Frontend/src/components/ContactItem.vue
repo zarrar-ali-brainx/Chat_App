@@ -21,7 +21,6 @@ const setActiveThreadItem = (user) => {
   let userFind = userStore.userList.find(el=>el.id == user.id);
   if (userFind?.conversation) {
     const conv_id = userFind.conversation.id
-    console.log(conv_id)
     conversationStore.setActiveConv(conv_id);
     conversationStore.setActiveConversation(conv_id);
     threadItemStore.fetchMessages(conv_id);
@@ -35,7 +34,7 @@ const setActiveThreadItem = (user) => {
 };
 
 </script>
-   
+
 <template>
 
       <!--  <div  v-for="threadItem in threadItems"-->

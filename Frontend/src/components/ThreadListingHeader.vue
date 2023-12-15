@@ -6,13 +6,13 @@ import {
   EllipsisVerticalIcon,
   PlusIcon, UserIcon,
   UsersIcon,
-    PowerIcon
+  PowerIcon
 } from "@heroicons/vue/24/solid";
 import {useUserStore} from "@/stores/userStore";
 import {ref} from "vue";
-import ContactItem from "@/components/ContactItem.vue";
-import router from "@/router";
+
 import {useRouter} from "vue-router";
+import {logout} from "passport/lib/http/request";
 const { create } = defineProps(['create']);
 const emit = defineEmits(['create']);
 
@@ -27,32 +27,77 @@ const toggleUserList = () => {
 
 };
 const Logout = () => {
-window.localStorage.removeItem('api_token');
-window.location.href = '/login';
+  window.localStorage.removeItem('api_token');
+  window.location.href = '/login';
+};
+
+
+const isCreateGroupVisible = ref(false);
+const isNewChatVisible = ref(false);
+const isLogoutVisible = ref(false);
+const toggleCreateGroup = () => {
+  isCreateGroupVisible.value = !isCreateGroupVisible.value;
+};
+
+const toggleNewChat = () => {
+  isNewChatVisible.value = !isNewChatVisible.value;
+};
+
+const toggleLogout = () => {
+  isLogoutVisible.value = !isLogoutVisible.value;
 };
 
 </script>
 
+
 <template>
   <div class="tl-header">
     <div class="user-info">
-      <UserIcon class="user-icon text-white" style="margin-right: 8px; height: 40px; width: 40px;  background-color: lightslategray"  />
-      <p class="user-name" style="width: 15%; margin-top: 20px">{{ userStore.authUser.name }}</p>
+      <UserIcon
+          class="user-icon text-white"
+          style="margin-right: 8px; height: 40px; width: 40px; background-color: lightslategray"
+      />
+      <p class="user-name" style="width: 15%; margin-top: 20px">
+        {{ userStore.authUser.name }}
+      </p>
     </div>
     <div class="icons-container">
-    <UsersIcon class="users-icon" @click="createGroup()" style="width: 23px;height: 23px; margin-top: 18px; margin-left: 105px; cursor: pointer;" />
-    <ChatBubbleOvalLeftEllipsisIcon style="width: 23px;height: 23px; margin-top: 17px; margin-left: 30px; cursor: pointer;"/>
-    <PlusIcon @click="toggleUserList()" style="width: 23px;height: 23px; margin-top: 17px; margin-left: 30px; cursor: pointer;"/>
-      <PowerIcon @click="Logout()" style="width: 21px;height: 21px; margin-top: 18px; margin-left: 20px; margin-right: 5px; cursor: pointer;"/>
-<!--    <transition name="fade">-->
-<!--      <div v-if="isUserListVisible">-->
-<!--        &lt;!&ndash; Fetch and display user list using ContactItem component &ndash;&gt;-->
-<!--        <ContactItem v-for="user in userStore.userList" :key="user.id" :user="user" />-->
-<!--      </div>-->
-<!--    </transition>-->
+      <UsersIcon
+          class="users-icon"
+          @click="createGroup"
+          @mouseenter="toggleCreateGroup"
+          @mouseleave="toggleCreateGroup"
+          style="width: 23px;height: 23px; margin-top: 18px; margin-left: 105px; cursor: pointer;"
+      />
+      <ChatBubbleOvalLeftEllipsisIcon
+
+          style="width: 23px;height: 23px; margin-top: 17px; margin-left: 30px; cursor: pointer;"
+      />
+      <PlusIcon
+          @click="toggleUserList"
+          @mouseenter="toggleNewChat"
+          @mouseleave="toggleNewChat"
+          style="width: 23px;height: 23px; margin-top: 17px; margin-left: 30px; cursor: pointer;"
+      />
+      <PowerIcon
+          @click="Logout"
+          @mouseenter="toggleLogout"
+          @mouseleave="toggleLogout"
+          style="width: 21px;height: 21px; margin-top: 18px; margin-left: 20px; margin-right: 5px; cursor: pointer;"
+      />
+
+      <!-- Dropdown Menus -->
+      <div v-show="isCreateGroupVisible" class="dropdown" style="font-size: small; z-index: 10; position: absolute; margin-left:75px; margin-top: 40px; background-color: #f9f9f9">
+        <span>Create Group</span>
+      </div>
+      <div v-show="isNewChatVisible" class="dropdown" style="font-size: small; position: absolute; margin-left:195px; margin-top: 40px; background-color: white">
+        <span>New Chat</span>
+      </div>
+      <div v-show="isLogoutVisible" class="dropdown" style="font-size: small; position: absolute; margin-left:235px; margin-top: 40px; background-color: white">
+        <span @click="Logout">Logout</span>
+      </div>
     </div>
   </div>
-
 </template>
 
 <style scoped>

@@ -125,4 +125,17 @@ class ConversationController extends Controller
 
         return response()->json(['message' => 'Conversation created successfully', 'conversation' => $conversation]);
     }
+    public function destroy( string $id)
+    {
+        $existingConversation = Conversations::find($id);
+        if($existingConversation){
+            $existingConversation->delete();
+
+            return response()->json();
+
+        }
+
+        return "Item not Found";
+
+    }
 }

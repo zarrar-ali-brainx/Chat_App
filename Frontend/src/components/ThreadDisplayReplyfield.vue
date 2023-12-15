@@ -79,7 +79,6 @@ const sendMessage = async () => {
         ).then(response => {
 
           fetchMessages(response.data.id);
-          console.log(response.data.id);
           if (!previousConversationId) {
 
             conversationStore.fetchConversations();
